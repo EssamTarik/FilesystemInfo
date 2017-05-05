@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Prolog-Web</title>
+    </head>
+
+    <body>
+        <form id="chat-form">
+            <input id="chat-input" type="text" name="name">
+            <button>Send</button>
+        </form>
+
+        <ul id="chat-log">
+        </ul>
+    </body>
+
+    <script>
+        var chatForm = document.getElementById("chat-form");
+        var chatInput = document.getElementById("chat-input");
+        var chatLog = document.getElementById("chat-log");
+        chatForm.onsubmit = function(e) {
+            chatLog.innerHTML += "<li>" + chatInput.value + "</li>";
+            getResponse(chatInput.value);
+            chatInput.value = "";
+
+            e.preventDefault();
+        }
+
+        function getResponse(query) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+					var newLineRegex = /.*\\n/;
+					var responseText = xhttp.responseText;
+					
+					if(newLineRegex.test(responseText))
+						responseText = responseText.substring(1, responseText.length-3);
+											
+                    chatLog.innerHTML += "<li>" + responseText + "</li>";
+                }
+            };
+            var url = "http://localhost:8000/?query=" + query;
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        }
+    </script>
+</html>
