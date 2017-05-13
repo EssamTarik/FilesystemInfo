@@ -16,13 +16,25 @@ whoareyou(X):-
 
 split_my_text(String, SplittedList):- split_string(String,' ', ' ', SplittedList).
 
+howManyFiles(["in"|[T]], X):-getHowManyFiles(T, X).
+howMany(["files"|T], X):-howManyFiles(T, X).
+how(["many"|T], X):-howMany(T, X).
+
 who(["owns"|[T]], X):-whoOwns(T, X).
 fact(["who"|T], X):- who(T, X).
+fact(["how"|T], X):- how(T, X).
 
 whoOwns(FileName, Output):-
 	FirstPart = "ls -l ",
 	LastPart =  "| awk '{ print $3 }'",
 	atom_concat(FirstPart, FileName, CommandStr),
+	atom_concat(CommandStr, LastPart, FinalCommandStr),
+	bash_command(FinalCommandStr, Output).
+
+getHowManyFiles(Directory, Output):-
+	FirstPart = "ls -l ",
+	LastPart =  "| wc -l",
+	atom_concat(FirstPart, Directory, CommandStr),
 	atom_concat(CommandStr, LastPart, FinalCommandStr),
 	bash_command(FinalCommandStr, Output).
 
