@@ -14,9 +14,14 @@ bash_command(Command, Output) :-
 whoareyou(X):-
 	bash_command('whoami', X).
 
+split_my_text(String, SplittedList):- split_string(String,' ', ' ', SplittedList).
+
+who(["owns"|[T]], X):-whoOwns(T, X).
+fact(["who"|T], X):- who(T, X).
+
 whoOwns(FileName, Output):-
 	FirstPart = "ls -l ",
-	LastPart =  "| awk '{ print $2 }'",
+	LastPart =  "| awk '{ print $3 }'",
 	atom_concat(FirstPart, FileName, CommandStr),
 	atom_concat(CommandStr, LastPart, FinalCommandStr),
 	bash_command(FinalCommandStr, Output).
@@ -38,4 +43,5 @@ request_response(Request) :-
 
 % === dataset ===
 response('who are you ?', X):-whoareyou(X).
+response(String, X):-split_my_text(String, List), fact(List, X).
 response(_, 'The question is unclear').
