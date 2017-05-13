@@ -10,19 +10,40 @@ bash_command(Command, Output) :-
                 [stdout(pipe(Out))]),
         read_string(Out, _, Output),
         close(Out).
+
+
+howManyFiles(["in"|[T]], X):-getHowManyFiles(T, X).
+howMany(["files"|T], X):-howManyFiles(T, X).
+how(["many"|T], X):-howMany(T, X).
+
+whenWas([H|["modified"]], X):-getWhenWasModified(H,X).
+when(["was"|T], X):-whenWas(T, X).
+
+who(["owns"|[T]], X):-whoOwns(T, X).
+fact(["who"|T], X):- who(T, X).
+fact(["how"|T], X):- how(T, X).
+fact(["when"|T], X):- when(T, X).
+
 	
 whoareyou(X):-
 	bash_command('whoami', X).
 
 split_my_text(String, SplittedList):- split_string(String,' ', ' ', SplittedList).
 
-howManyFiles(["in"|[T]], X):-getHowManyFiles(T, X).
-howMany(["files"|T], X):-howManyFiles(T, X).
-how(["many"|T], X):-howMany(T, X).
+whoOwns(FileName, Output):-
+	FirstPart = "ls -l ",
+	LastPart =  "| awk '{ print $3 }'",
+	atom_concat(FirstPart, FileName, CommandStr),
+	atom_concat(CommandStr, LastPart, FinalCommandStr),
+	bash_command(FinalCommandStr, Output).
 
-who(["owns"|[T]], X):-whoOwns(T, X).
-fact(["who"|T], X):- who(T, X).
-fact(["how"|T], X):- how(T, X).
+getWhenWasModified(FileName, Output):-
+	FirstPart = "stat ",
+	LastPart =  " | grep modify -i | tail -1 | awk ' { print $2 \" \" $3}'",
+	atom_concat(FirstPart, FileName, CommandStr),
+	atom_concat(CommandStr, LastPart, FinalCommandStr),
+	bash_command(FinalCommandStr, Output).
+
 
 whoOwns(FileName, Output):-
 	FirstPart = "ls -l ",
