@@ -32,8 +32,8 @@ whoOwns(FileName, Output):-
 	bash_command(FinalCommandStr, Output).
 
 getHowManyFiles(Directory, Output):-
-	FirstPart = "ls -l ",
-	LastPart =  "| wc -l",
+	FirstPart = "ls ",
+	LastPart =  "| wc -w",
 	atom_concat(FirstPart, Directory, CommandStr),
 	atom_concat(CommandStr, LastPart, FinalCommandStr),
 	bash_command(FinalCommandStr, Output).
