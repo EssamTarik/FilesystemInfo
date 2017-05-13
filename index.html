@@ -37,7 +37,7 @@
 					if(newLineRegex.test(responseText))
 						responseText = responseText.substring(1, responseText.length-3);
 											
-                    chatLog.innerHTML += "<li>" + responseText + "</li>";
+                    chatLog.innerHTML += "<li>" + responseText + "</li><br>";
                 }
             };
             var url = "http://localhost:8000/?query=" + query;
